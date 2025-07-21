@@ -1,0 +1,5 @@
+servers_test.sh
+*.yml
+cmd/config_example.json
+testing/*
+*.sh

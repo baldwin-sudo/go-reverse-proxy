@@ -1,5 +1,12 @@
 package proxy
 
+import (
+	"encoding/json"
+	"os"
+)
+
+var Cfg Config
+
 type Config struct {
 	ServerConfig ServerConfig  `json:"server"`
 	RoutesConfig []RouteConfig `json:"routes"`
@@ -14,5 +21,13 @@ type RouteConfig struct {
 }
 
 func LoadConfig(configFile string) {
-
+	data, err := os.ReadFile(configFile)
+	if err != nil {
+		panic("error reding the file")
+	}
+	var config Config
+	if err := json.Unmarshal(data, &config); err != nil {
+		panic("error parsing json")
+	}
+	Cfg = config
 }

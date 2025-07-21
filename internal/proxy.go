@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"sync/atomic"
 )
 
 // TargetRoutes
@@ -30,7 +31,7 @@ type Backend struct {
 }
 type Pool struct {
 	Backends []*Backend
-	Next     int
+	Next     int32
 	//mu      sync.Mutex // to synchronize access , in the context of conccurent requests
 }
 
@@ -74,7 +75,7 @@ func (p *Pool) NextProxy() *httputil.ReverseProxy {
 
 	proxy := p.Backends[p.Next].Proxy
 	//TODO: add checking the ishealthy condition
-	p.Next = (p.Next + 1) % len(p.Backends)
+	p.Next = atomic.AddInt32(&p.Next, int32(1)) % int32(len(p.Backends))
 	return proxy
 }
 
@@ -87,7 +88,8 @@ func (r *Route) NextProxy() *httputil.ReverseProxy {
 func (route *Route) HandleReqOverProxy() http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
-
+		fmt.Println("request ack .")
+		fmt.Println("path:", r.Host, r.RemoteAddr, r.RequestURI)
 		proxy := route.NextProxy()
 		proxy.ServeHTTP(w, r)
 
