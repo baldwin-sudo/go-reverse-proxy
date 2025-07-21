@@ -1,0 +1,22 @@
+{
+    "server": {
+        "address": "localhost",
+        "port": 8080
+    },
+    "routes": [
+        {
+            "path": "/service1",
+            "backends": [
+                "http://192.168.1.1:8081",
+                "http://192.168.1.2:8081"
+            ]
+        },
+        {
+            "path": "/service2",
+            "backends": [
+                "http://192.168.2.1:8081",
+                "http://192.168.2.2:8081"
+            ]
+        }
+    ]
+}
